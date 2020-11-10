@@ -38,7 +38,7 @@
 		],
 		"arrow-parens": ["warn", "as-needed"],
 		"comma-dangle": ["warn", "always-multiline"],
-		"array-element-newline": ["warn", "always"],
+		"array-element-newline": ["warn", "consistent"],
 		"react/prop-types": 0,
 		"no-unused-vars": 1
 	}
