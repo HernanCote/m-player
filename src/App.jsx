@@ -19,6 +19,7 @@ const App = () => {
 	const [songInfo, setSongInfo] = useState({
 		currentTime: 0,
 		duration: 0,
+		animationPercentage: 0,
 	});
 	const [openLibrary, setOpenLibrary] = useState(false);
 
@@ -30,24 +31,43 @@ const App = () => {
 		setSongInfo({ 
 			...songInfo, 
 			currentTime,
-			duration, 
+			duration,
+			animationPercentage: (currentTime/duration) * 100,
 		});
 	};
 
+	const skipTrackHandler = async (direction = 1) => {
+		if (typeof(direction) !== 'number') return;
+		const currentIndex = 	songs.findIndex(x => x.id === currentSong.id);
+		const index = (currentIndex + direction) % songs.length >= 0 ? ((currentIndex + direction) % songs.length) : (songs.length - 1);
+		setSongInfo({ 
+			...songInfo, 
+			animationPercentage: 0,
+		});
+		await setCurrentSong(songs[index]);
+		isPlaying && audioRef.current.play();
+	};
+
 	return (
-		<div className="App">
+		<div 
+			className={`App ${openLibrary && 'library-active'}`}
+		>
 			<Nav 
 				openLibrary={openLibrary}
 				setOpenLibrary={setOpenLibrary}
 			/>
 			<Song {...currentSong} />
 			<Player 
+				setSongs={setSongs}
+				songs={songs}
 				currentSong={currentSong} 
 				isPlaying={isPlaying}
 				audioRef={audioRef}
 				songInfo={songInfo}
+				setCurrentSong={setCurrentSong}
 				setIsPlaying={setIsPlaying}
 				setSongInfo={setSongInfo}
+				skipTrackHandler={skipTrackHandler}
 			/>
 			<Library 
 				openLibrary={openLibrary}
@@ -60,6 +80,7 @@ const App = () => {
 			<audio 
 				onTimeUpdate={timeUpdateHandler}
 				onLoadedMetadata={timeUpdateHandler}
+				onEnded={() => skipTrackHandler()}
 				ref={audioRef}
 				src={currentSong.audio}
 			></audio>
