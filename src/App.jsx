@@ -45,7 +45,21 @@ const App = () => {
 			animationPercentage: 0,
 		});
 		await setCurrentSong(songs[index]);
+		activeLibraryHandler(songs[index]);
 		isPlaying && audioRef.current.play();
+	};
+
+	const activeLibraryHandler = current => {		
+		const newSongs = songs.map(s => s.id === current.id 
+			? { 
+				...s, 
+				active: true, 
+			} 
+			: { 
+				...s, 
+				active: false, 
+			});
+		setSongs(newSongs);
 	};
 
 	return (
